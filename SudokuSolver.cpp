@@ -6,7 +6,6 @@
 
 class SudokuSolver
 {
-private:
     std::vector<std::vector<char>> originalBoard; // To track the initial board
 
     static bool canBePlaced(const int i, const int j, const char k, const std::vector<std::vector<char>>& board)
@@ -27,7 +26,8 @@ private:
         for (int i = x; i < 9; ++i)
         {
             for (int j = (i == x ? y : 0); j < 9; ++j)
-            { // Reset y for new rows
+            {
+                // Reset y for new rows
                 if (board[i][j] == '.')
                 {
                     for (char k = '1'; k <= '9'; ++k)
@@ -68,7 +68,7 @@ private:
             }
             std::cout << '\n';
         }
-        std::cout << "---------------------\n\n" << '\n';
+        std::cout << "-----------------" << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(700));
     }
@@ -81,12 +81,12 @@ public:
     }
 };
 
-std::vector<std::vector<char>> fetchDailySudoku(const std::string& filename)
+std::vector<std::vector<char>> fetchSudoku(const std::string& filename)
 {
-    std::vector<std::vector<char>> board(9, std::vector<char>(9));
+    std::vector board(9, std::vector<char>(9));
     std::ifstream inputFile(filename);
     if (!inputFile.is_open())
-        {
+    {
         std::cerr << "Error opening file: " << filename << std::endl;
         exit(1);
     }
@@ -108,7 +108,9 @@ std::vector<std::vector<char>> fetchDailySudoku(const std::string& filename)
 
 int main()
 {
-    std::vector<std::vector<char>> board{ fetchDailySudoku("/home/soumik/sudoku_catcher/daily_sudoku.txt") };
+    // absolute path to text file containing the board
+    std::string filename = "/home/soumik/sudoku_catcher/daily_sudoku.txt";
+    std::vector board{ fetchSudoku(filename) };
 
     auto sol{ SudokuSolver() };
     sol.solveSudoku(board);
