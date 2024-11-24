@@ -2,13 +2,14 @@
 #include <vector>
 #include <thread>
 #include <chrono>
+#include <fstream>
 
 class SudokuSolver
 {
 private:
     std::vector<std::vector<char>> originalBoard; // To track the initial board
 
-    static bool canBePlaced(const int i, const int j, const char k, const std::vector<std::vector<char>> &board)
+    static bool canBePlaced(const int i, const int j, const char k, const std::vector<std::vector<char>>& board)
     {
         const int startRow = i / 3 * 3;
         const int startCol = j / 3 * 3;
@@ -47,7 +48,7 @@ private:
         return true;
     }
 
-    void printBoard(const std::vector<std::vector<char>> &board) const
+    void printBoard(const std::vector<std::vector<char>>& board) const
     {
         for (int i = 0; i < 9; ++i)
         {
@@ -73,25 +74,43 @@ private:
     }
 
 public:
-    void solveSudoku(std::vector<std::vector<char>> &board)
+    void solveSudoku(std::vector<std::vector<char>>& board)
     {
         originalBoard = board; // Store the original board
         sudokuSolverUtil(0, 0, board);
     }
 };
 
-int main()
+std::vector<std::vector<char>> fetchDailySudoku(const std::string& filename)
 {
     std::vector<std::vector<char>> board(9, std::vector<char>(9));
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open())
+        {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        exit(1);
+    }
+
     for (int i = 0; i < 9; ++i)
     {
+        std::string line;
+        getline(inputFile, line);
         for (int j = 0; j < 9; ++j)
         {
-            std::cin >> board[i][j];
+            board[i][j] = line[j]; // Assume '.' for empty cells
         }
     }
 
-    auto sol = SudokuSolver();
+    inputFile.close();
+    return board;
+}
+
+
+int main()
+{
+    std::vector<std::vector<char>> board{ fetchDailySudoku("/home/soumik/sudoku_catcher/daily_sudoku.txt") };
+
+    auto sol{ SudokuSolver() };
     sol.solveSudoku(board);
 
     return 0;
